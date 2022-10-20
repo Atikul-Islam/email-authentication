@@ -1,14 +1,37 @@
-import {getAuth} from "firebase/auth"
-import './App.css';
-import Register from "./components/Register/Register";
-import app from "./Firebase/firebase.init";
 
-const auth = getAuth(app);
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import './App.css';
+import Main from './components/Layout/Main';
+import Login from './components/Login';
+import Register from "./components/Register/Register";
+
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Main>0</Main>,
+    children: [
+      {
+        path: '/',
+        element: <Register></Register>
+      },
+      {
+        path: '/register',
+        element: <Register></Register>
+      },
+      {
+        path: '/login',
+        element: <Login></Login>
+      },
+    ]
+  }
+])
+
 
 function App() {
   return (
     <div className="">
-      <Register></Register>
+      <RouterProvider router={router}></RouterProvider>
     </div>
   );
 }
