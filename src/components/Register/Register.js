@@ -7,12 +7,15 @@ const auth = getAuth(app);
 
 const Register = () => {
     const [passwordError, setPasswordError] = useState('');
+    const [success, setSuccess] = useState(false);
 
     const handleRegister = e =>{
-    
+        
         e.preventDefault();
-        const email= e.target.email.value;
-        const password = e.target.password.value;
+        setSuccess(false);
+        const form = e.target;
+        const email= form.email.value;
+        const password = form.password.value;
         if(!/(?=.*[!@#$&*])/.test(password)){
             setPasswordError('Please add at least one special character');
             return;
@@ -29,9 +32,12 @@ const Register = () => {
         .then( result =>{
             const user = result.user;
             console.log(user);
+            setSuccess(true);
+            form.reset();
         })
         .catch( error =>{
             console.error('error',error);
+            setPasswordError(error.message);
         })
     }
 
@@ -49,6 +55,7 @@ const Register = () => {
           <Form.Control type="password" name="password" placeholder="Password" required />
         </Form.Group>
         <p className="text-danger">{passwordError}</p>
+        {success && <p className="text-success">User created Successfully.</p>}
         <Button variant="primary" type="submit">
           Register
         </Button>
