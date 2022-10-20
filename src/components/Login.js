@@ -1,4 +1,4 @@
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -8,6 +8,7 @@ const auth = getAuth(app);
 
 const Login = () => {
     const [success,setSuccess] = useState(false);
+    const [userEmail,setUserEmail] = useState('');
     const handleSubmit = e =>{
         e.preventDefault();
         setSuccess(false);
@@ -25,6 +26,26 @@ const Login = () => {
             console.error('error',error);
         })
     }
+
+    const handleEmailBlur = event =>{
+        const email = event.target.value;
+        setUserEmail(email);
+    }
+
+    const handleForgetPassword = () =>{
+        if(!userEmail){
+            alert('Please enter your email address.')
+            return;
+        }
+        sendPasswordResetEmail(auth,userEmail)
+        .then( () =>{
+            alert('Password reset email sent. Please check your email.')
+        })
+        .catch( error =>{
+            console.error('error',error);
+        })
+    }
+
   return (
     <div className="w-50 mx-auto">
       <h2 className="text-success">Please Login</h2>
@@ -32,6 +53,7 @@ const Login = () => {
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
+          onBlur={handleEmailBlur}
             type="email"
             name="email"
             placeholder="Enter email"
@@ -53,6 +75,7 @@ const Login = () => {
           Login
         </Button>
         <p className="text-success">New to this site? Please <Link to='/register'>Register</Link> </p>
+        <Button onClick={handleForgetPassword} variant="link">Forget password?</Button>
       </Form>
     </div>
   );

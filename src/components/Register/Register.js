@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, getAuth, sendEmailVerification } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, updateProfile } from "firebase/auth";
 import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -17,6 +17,7 @@ const Register = () => {
         const form = e.target;
         const email= form.email.value;
         const password = form.password.value;
+        const name = form.name.value;
         if(!/(?=.*[!@#$&*])/.test(password)){
             setPasswordError('Please add at least one special character');
             return;
@@ -36,11 +37,22 @@ const Register = () => {
             setSuccess(true);
             form.reset();
             verifyEmail();
+            updateUserName(name);
         })
         .catch( error =>{
             console.error('error',error);
             setPasswordError(error.message);
         })
+    }
+
+    const updateUserName = (name) =>{
+        updateProfile(auth.currentUser,{
+            displayName: name
+        })
+        .then( () =>{
+            console.log('display name updated')
+        })
+        .catch(error => console.error(error))
     }
 
     const verifyEmail = () =>{
@@ -54,6 +66,10 @@ const Register = () => {
     <div className="w-50 mx-auto">
         <h2 className="text-primary">Please Register</h2>
       <Form onSubmit={handleRegister}>
+        <Form.Group className="mb-3" controlId="formBasicName">
+          <Form.Label>Your Name</Form.Label>
+          <Form.Control type="text" name="name" placeholder="Enter your name" required />
+        </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control type="email" name="email" placeholder="Enter email" required />
