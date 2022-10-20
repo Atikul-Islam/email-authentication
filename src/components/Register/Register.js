@@ -1,16 +1,29 @@
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-import React from "react";
+import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import app from "../../Firebase/firebase.init";
 
 const auth = getAuth(app);
 
 const Register = () => {
+    const [passwordError, setPasswordError] = useState('');
 
     const handleRegister = e =>{
+    
         e.preventDefault();
         const email= e.target.email.value;
         const password = e.target.password.value;
+        if(!/(?=.*[!@#$&*])/.test(password)){
+            setPasswordError('Please add at least one special character');
+            return;
+        }
+        if(password.length < 6){
+            setPasswordError('Password should be at least 6 characters.');
+            return;
+        }
+        
+        setPasswordError('');
+
         console.log(email , password);
         createUserWithEmailAndPassword(auth,email,password)
         .then( result =>{
@@ -35,6 +48,7 @@ const Register = () => {
           <Form.Label>Password</Form.Label>
           <Form.Control type="password" name="password" placeholder="Password" required />
         </Form.Group>
+        <p className="text-danger">{passwordError}</p>
         <Button variant="primary" type="submit">
           Register
         </Button>
